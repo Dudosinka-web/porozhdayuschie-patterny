@@ -1,0 +1,8 @@
+/runtime/
+/web/assets/
+/vendor/
+.env
+.idea/
+.vscode/
+.DS_Store
+.osp/
