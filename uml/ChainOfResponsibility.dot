@@ -1,0 +1,32 @@
+digraph ChainOfResponsibility {
+    graph [rankdir=TB, splines=polyline, nodesep=0.32, ranksep=0.5, pad=0.3, bgcolor="white", fontname="Arial", labelloc="t", label="Chain of Responsibility — Order processing", fontsize=18];
+    node [shape=plain, fontname="Arial", fontsize=10];
+    edge [fontname="Arial", fontsize=9, color="#444444", arrowsize=0.8];
+
+    Controller [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#E5DCF8"><B>BehaviorController</B></TD></TR><TR><TD ALIGN="LEFT">+ actionIndex(): string</TD></TR></TABLE>>];
+    Base [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#E5DCF8"><I>abstract</I><BR/><B>OrderHandler</B></TD></TR><TR><TD ALIGN="LEFT"># next: ?OrderHandler</TD></TR><TR><TD ALIGN="LEFT">+ setNext(handler): OrderHandler</TD></TR><TR><TD ALIGN="LEFT">+ handle(context): bool</TD></TR><TR><TD ALIGN="LEFT"># check(context): bool</TD></TR></TABLE>>];
+    Context [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#D8E8FC"><B>OrderContext</B></TD></TR><TR><TD ALIGN="LEFT">+ userId: ?int</TD></TR><TR><TD ALIGN="LEFT">+ isAuthenticated: bool</TD></TR><TR><TD ALIGN="LEFT">+ items: array</TD></TR><TR><TD ALIGN="LEFT">+ error: ?string</TD></TR><TR><TD ALIGN="LEFT">+ order: ?array</TD></TR><TR><TD ALIGN="LEFT">+ trace: array</TD></TR></TABLE>>];
+    Stock [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#DDF0D7"><B>StockCheckHandler</B></TD></TR><TR><TD ALIGN="LEFT"># check(context): bool</TD></TR></TABLE>>];
+    Auth [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#DDF0D7"><B>AuthorizationHandler</B></TD></TR><TR><TD ALIGN="LEFT"># check(context): bool</TD></TR></TABLE>>];
+    Address [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#DDF0D7"><B>DeliveryAddressHandler</B></TD></TR><TR><TD ALIGN="LEFT"># check(context): bool</TD></TR></TABLE>>];
+    Create [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#DDF0D7"><B>CreateOrderHandler</B></TD></TR><TR><TD ALIGN="LEFT"># check(context): bool</TD></TR></TABLE>>];
+    StockDB [shape=cylinder, style=filled, fillcolor="#F8DCDC", label="product_stock\n(id, name, stock, price)"];
+    AddressDB [shape=cylinder, style=filled, fillcolor="#F8DCDC", label="delivery_addresses\n(id, user_id, address)"];
+    OrdersDB [shape=cylinder, style=filled, fillcolor="#F8DCDC", label="shop_orders\n(id, user_id, items_json, total, status)"];
+
+    Controller -> Stock [label="starts chain", style=dashed];
+    Stock -> Auth [label="next", color="#9A6C1D", penwidth=1.5];
+    Auth -> Address [label="next", color="#9A6C1D", penwidth=1.5];
+    Address -> Create [label="next", color="#9A6C1D", penwidth=1.5];
+
+    Stock -> Base [label="extends", arrowhead=empty, constraint=false];
+    Auth -> Base [label="extends", arrowhead=empty, constraint=false];
+    Address -> Base [label="extends", arrowhead=empty, constraint=false];
+    Create -> Base [label="extends", arrowhead=empty, constraint=false];
+    Base -> Context [label="uses", style=dashed, constraint=false];
+
+    Stock -> StockDB [label="checks", style=dashed];
+    Address -> AddressDB [label="checks", style=dashed];
+    Create -> StockDB [label="updates stock", style=dashed, constraint=false];
+    Create -> OrdersDB [label="creates order", style=dashed];
+}
