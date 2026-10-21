@@ -1,0 +1,20 @@
+digraph Observer {
+    graph [rankdir=TB, splines=polyline, nodesep=0.35, ranksep=0.55, pad=0.3, bgcolor="white", fontname="Arial", labelloc="t", label="Observer — News distribution", fontsize=18];
+    node [shape=plain, fontname="Arial", fontsize=10];
+    edge [fontname="Arial", fontsize=9, color="#444444", arrowsize=0.8];
+
+    Controller [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#E5DCF8"><B>BehaviorController</B></TD></TR><TR><TD ALIGN="LEFT">+ actionIndex(): string</TD></TR><TR><TD ALIGN="LEFT">+ actionSubscribe(): Response</TD></TR></TABLE>>];
+    Publisher [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#D8E8FC"><B>NewsPublisher</B></TD></TR><TR><TD ALIGN="LEFT">- subscribers: NewsObserverInterface[]</TD></TR><TR><TD ALIGN="LEFT">- deliveryLog: string[]</TD></TR><TR><TD ALIGN="LEFT">+ attach(subscriber): void</TD></TR><TR><TD ALIGN="LEFT">+ detach(subscriber): void</TD></TR><TR><TD ALIGN="LEFT">+ publish(news: News): void</TD></TR><TR><TD ALIGN="LEFT">+ getDeliveryLog(): array</TD></TR></TABLE>>];
+    Observer [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#E5DCF8"><I>interface</I><BR/><B>NewsObserverInterface</B></TD></TR><TR><TD ALIGN="LEFT">+ update(news: News): void</TD></TR></TABLE>>];
+    Subscriber [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#DDF0D7"><B>EmailNewsSubscriber</B></TD></TR><TR><TD ALIGN="LEFT">- email: string</TD></TR><TR><TD ALIGN="LEFT">+ getEmail(): string</TD></TR><TR><TD ALIGN="LEFT">+ update(news: News): void</TD></TR></TABLE>>];
+    News [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#FFF0C9"><B>News</B></TD></TR><TR><TD ALIGN="LEFT">+ title: string</TD></TR><TR><TD ALIGN="LEFT">+ content: string</TD></TR><TR><TD ALIGN="LEFT">+ publishedAt: string</TD></TR></TABLE>>];
+    SubscribersDB [shape=cylinder, style=filled, fillcolor="#F8DCDC", label="news_subscribers\n(id, email, created_at)"];
+    Mailer [shape=component, style=filled, fillcolor="#F8DCDC", label="Yii Mailer\nruntime/mail"];
+
+    Controller -> Publisher [label="uses", style=dashed];
+    Controller -> SubscribersDB [label="loads subscribers", style=dashed];
+    Publisher -> Observer [label="notifies"];
+    Publisher -> News [label="publishes"];
+    Subscriber -> Observer [label="implements", style=dashed, arrowhead=empty, constraint=false];
+    Subscriber -> Mailer [label="creates email", style=dashed, constraint=false];
+}
